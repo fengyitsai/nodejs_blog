@@ -2,20 +2,44 @@ var express = require('express');
 var router = express.Router();
 var crypto = require('crypto');
 var User = require('../models/user.js');
+var Post = require('../models/post.js');
+
+function checkLogin(req, res, next){
+	if(!req.session.user){
+		req.flash('error','not log in yet');
+		res.redirect('/login');
+	}
+	next();
+}
+
+function checkNotLogin(req, res, next){
+	if(req.session.user){
+		req.flash('error','already logged in');
+		res.redirect('back');
+	}
+	next();
+}
 
 /* GET home page. */
 router.get('/', function(req, res) {
-	res.render('index', { 
-		title: 'Main Page',
-		user: req.session.user,
-		success: req.flash('success').toString(),
-		error: req.flash('error').toString()
+	Post.get(null,function(err,posts){
+
+		if(err){
+			posts = [];
+		}
+
+		res.render('index', { 
+			title: 'Main Page',
+			user: req.session.user,
+			posts: posts,
+			success: req.flash('success').toString(),
+			error: req.flash('error').toString()
+		});
 	});
+
 });
 
-router.post('/', function(req, res) {
-});
-
+router.get('/reg', checkNotLogin);
 router.get('/reg', function(req, res) {
 		res.render('register', { 
 		title: 'Register', 
@@ -25,6 +49,7 @@ router.get('/reg', function(req, res) {
 	});
 });
 
+router.post('/reg', checkNotLogin);
 router.post('/reg', function(req, res) {
 	var name = req.body.name,
 		password = req.body.password,
@@ -65,6 +90,7 @@ router.post('/reg', function(req, res) {
 	});
 });
 
+router.get('/login', checkNotLogin);
 router.get('/login', function(req, res) {
 	res.render('login', { 
 		title: 'Login',
@@ -74,6 +100,7 @@ router.get('/login', function(req, res) {
 	});
 });
 
+router.post('/login', checkNotLogin);
 router.post('/login', function(req, res) {
 	var md5 = crypto.createHash('md5');
 	var password = md5.update(req.body.password).digest('hex');
@@ -95,19 +122,39 @@ router.post('/login', function(req, res) {
 	});
 });
 
+router.get('/post', checkLogin);
 router.get('/post', function(req, res) {
-  res.render('post', { title: 'Post' });
+	res.render('post', {
+		title: 'Post',
+		user: req.session.user,
+		success: req.flash('success').toString(),
+		error: req.flash('error').toString()
+	});
 });
 
+router.post('/post', checkLogin);
 router.post('/post', function(req, res) {
+	var currentUser = req.session.user,
+		post = new Post(currentUser.name,req.body.title, req.body.post);
+
+	post.save(function(err){
+		if(err){
+			req.flash('err',err);
+			return res.redirect('/');
+		}
+		req.flash('success',"post success");
+		res.redirect('/');
+	});
 });
 
+router.get('/logout', checkLogin);
 router.get('/logout', function(req, res) {
 	req.session.user = null;
 	req.flash('success','logout success');
 	res.redirect('/');
 });
 
+router.get('/logout', checkLogin);
 router.post('/logout', function(req, res) {
 });
 
