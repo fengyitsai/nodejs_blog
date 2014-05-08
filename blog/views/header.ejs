@@ -15,8 +15,24 @@
 
 <nav>
 <span><a title="HOME" href="/">HOME</a></span>
+
+<% if(user) { %>
+<span><a title="HOME" href="/post">POST</a></span>
+<span><a title="HOME" href="/logout">LOGOUT</a></span>
+<% } else { %>
 <span><a title="HOME" href="/login">LOGIN</a></span>
 <span><a title="HOME" href="/reg">REGISTER</a></span>
+<% }%>
+
 </nav>
 
 <article>
+<% if(success) { %>
+	<div><%= success %></div>
+<% }%>
+<% if(error) { %>
+	<div><%= error %></div>
+<% }%>
+
+
+
