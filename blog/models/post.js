@@ -1,9 +1,9 @@
 var mongodb = require('./db');
 
 function Post(name, title, post){
-	this.name = user.name;
-	this.title = user.title;
-	this.post = user.post;
+	this.name = name;
+	this.title = title;
+	this.post = post;
 }
 
 module.exports = Post;
@@ -15,11 +15,11 @@ Post.prototype.save = function(callback){
 
 	var time = {
 		date: date,
-		year: date.getFullYear,
-		month: date.getFullYear+"-"+(date.getMonth+1),
-		day: date.getFullYear+"-"+(date.getMonth+1)+"-"+date.getDate(),
-		minute: date.getFullYear+"-"+(date.getMonth+1)+"-"+date.getDate()+" "+
-			date.getHours()+":"+(date.getMinutes<10 ? '0'+date.getMinutes() : date.getMinutes())
+		year: date.getFullYear(),
+		month: date.getFullYear()+"-"+(date.getMonth()+1),
+		day: date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate(),
+		minute: date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+
+			date.getHours()+":"+(date.getMinutes()<10 ? '0'+date.getMinutes() : date.getMinutes())
 	};
 
 	var post = {
@@ -91,7 +91,3 @@ Post.get = function(name, callback){
 		});
 	});
 };
-
-
-
-
