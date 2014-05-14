@@ -16,7 +16,7 @@
     "mongodb": "*",
     "connect-mongo": "*",
     "express-session": "*",
-    "connect-flash": "*"
-
+    "connect-flash": "*",
+    "markdown":"*"
   }
 }
