@@ -17,6 +17,7 @@
     "connect-mongo": "*",
     "express-session": "*",
     "connect-flash": "*",
-    "markdown":"*"
+    "markdown":"*",
+    "multer":"*"
   }
 }

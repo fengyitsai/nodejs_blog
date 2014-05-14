@@ -8,8 +8,8 @@ var session = require('express-session')
 var MongoStore = require('connect-mongo')(session);
 var settings = require('./settings');
 var flash = require('connect-flash');
-
 var routes = require('./routes/index');
+var multer  = require('multer');
 
 var app = express();
 
@@ -23,6 +23,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
+app.use(multer({ dest: './public/images'}))
 
 app.use(session({
     secret: settings.cookieSecret,

@@ -3,6 +3,7 @@ var router = express.Router();
 var crypto = require('crypto');
 var User = require('../models/user.js');
 var Post = require('../models/post.js');
+var fs = require('fs');
 
 function checkLogin(req, res, next){
 	if(!req.session.user){
@@ -145,6 +146,33 @@ router.post('/post', function(req, res) {
 		req.flash('success',"post success");
 		res.redirect('/');
 	});
+});
+
+router.get('/upload', checkLogin);
+router.get('/upload', function (req, res) {
+  res.render('upload', {
+    title: 'Upload',
+    user: req.session.user,
+    success: req.flash('success').toString(),
+    error: req.flash('error').toString()
+  });
+});
+
+router.post('/upload', checkLogin);
+router.post('/upload', function (req, res) {
+
+  for (var i in req.files) {
+    if (req.files[i].size == 0){
+    } else {
+      console.log(req.files[i]);
+      var target_path = './public/images/' + req.files[i].originalname;
+      fs.renameSync(req.files[i].path, target_path);
+      console.log('Successfully renamed a file!');
+    }
+  }
+  
+  req.flash('success', '文件上传成功!');
+  res.redirect('/upload');
 });
 
 router.get('/logout', checkLogin);
