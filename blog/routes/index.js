@@ -23,7 +23,7 @@ function checkNotLogin(req, res, next){
 
 /* GET home page. */
 router.get('/', function(req, res) {
-	Post.get(null,function(err,posts){
+	Post.getAll(null,function(err,posts){
 
 		if(err){
 			posts = [];
@@ -170,10 +170,65 @@ router.post('/upload', function (req, res) {
       console.log('Successfully renamed a file!');
     }
   }
-  
-  req.flash('success', '文件上传成功!');
+
+  req.flash('success', 'Upload Successfully!');
   res.redirect('/upload');
 });
+
+router.get('/u/:name', function (req, res) {
+  User.get(req.params.name, function (err, user) {
+    if (!user) {
+      req.flash('error', 'This user doesn\'t exist!'); 
+      return res.redirect('/');
+    }
+
+    Post.getAll(user.name, function (err, posts) {
+      if (err) {
+        req.flash('error', err); 
+        return res.redirect('/');
+      } 
+      res.render('user', {
+        title: user.name,
+        posts: posts,
+        user : req.session.user,
+        success : req.flash('success').toString(),
+        error : req.flash('error').toString()
+      });
+    });
+  }); 
+});
+
+router.get('/u/:name/:day/:title', function (req, res) {
+  Post.getOne(req.params.name, req.params.day, req.params.title, function (err, post) {
+    if (err) {
+      req.flash('error', err); 
+      return res.redirect('/');
+    }
+    res.render('article', {
+      title: req.params.title,
+      post: post,
+      user: req.session.user,
+      success: req.flash('success').toString(),
+      error: req.flash('error').toString()
+    });
+  });
+});
+
+// router.param('name', function(req, res, next, name) {
+// 	// do validation on name here
+// 	// blah blah validation
+// 	// log something so we know its working
+// 	console.log('doing name validations on ' + name);
+
+// 	// once validation is done save the new item in the req
+// 	req.name = name;
+// 	// go to the next thing
+// 	next();	
+// });
+
+// router.get('/hello/:name', function(req, res) {
+// 	res.send('hello ' + req.name + '!');
+// });
 
 router.get('/logout', checkLogin);
 router.get('/logout', function(req, res) {
