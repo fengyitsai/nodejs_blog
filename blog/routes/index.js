@@ -161,41 +161,41 @@ router.get('/upload', function (req, res) {
 router.post('/upload', checkLogin);
 router.post('/upload', function (req, res) {
 
-  for (var i in req.files) {
-    if (req.files[i].size == 0){
-    } else {
-      console.log(req.files[i]);
-      var target_path = './public/images/' + req.files[i].originalname;
-      fs.renameSync(req.files[i].path, target_path);
-      console.log('Successfully renamed a file!');
-    }
-  }
+	for (var i in req.files) {
+	if (req.files[i].size == 0){
+	} else {
+	console.log(req.files[i]);
+	var target_path = './public/images/' + req.files[i].originalname;
+	fs.renameSync(req.files[i].path, target_path);
+	console.log('Successfully renamed a file!');
+	}
+	}
 
-  req.flash('success', 'Upload Successfully!');
-  res.redirect('/upload');
+	req.flash('success', 'Upload Successfully!');
+	res.redirect('/upload');
 });
 
 router.get('/u/:name', function (req, res) {
-  User.get(req.params.name, function (err, user) {
-    if (!user) {
-      req.flash('error', 'This user doesn\'t exist!'); 
-      return res.redirect('/');
-    }
+	User.get(req.params.name, function (err, user) {
+		if (!user) {
+			req.flash('error', 'This user doesn\'t exist!'); 
+			return res.redirect('/');
+		}
 
-    Post.getAll(user.name, function (err, posts) {
-      if (err) {
-        req.flash('error', err); 
-        return res.redirect('/');
-      } 
-      res.render('user', {
-        title: user.name,
-        posts: posts,
-        user : req.session.user,
-        success : req.flash('success').toString(),
-        error : req.flash('error').toString()
-      });
-    });
-  }); 
+		Post.getAll(user.name, function (err, posts) {
+			if (err) {
+				req.flash('error', err);
+				return res.redirect('/');
+			}
+			res.render('user', {
+				title: user.name,
+				posts: posts,
+				user : req.session.user,
+				success : req.flash('success').toString(),
+				error : req.flash('error').toString()
+			});
+		});
+	}); 
 });
 
 router.get('/u/:name/:day/:title', function (req, res) {
@@ -239,6 +239,51 @@ router.get('/logout', function(req, res) {
 
 router.get('/logout', checkLogin);
 router.post('/logout', function(req, res) {
+});
+
+router.get('/edit/:name/:day/:title', checkLogin);
+router.get('/edit/:name/:day/:title', function (req, res) {
+	var currentUser = req.session.user;
+	Post.edit(currentUser.name, req.params.day, req.params.title, function (err, post) {
+		if (err) {
+			req.flash('error', err); 
+			return res.redirect('back');
+		}
+		res.render('edit', {
+			title: 'EDIT',
+			post: post,
+			user: req.session.user,
+			success: req.flash('success').toString(),
+			error: req.flash('error').toString()
+		});
+	});
+});
+
+router.post('/edit/:name/:day/:title', checkLogin);
+router.post('/edit/:name/:day/:title', function (req, res) {
+	var currentUser = req.session.user;
+	Post.update(currentUser.name, req.params.day, req.params.title, req.body.post, function (err) {
+	var url = '/u/' + req.params.name + '/' + req.params.day + '/' + req.params.title;
+	if (err) {
+		req.flash('error', err); 
+		return res.redirect(url);
+	}
+	req.flash('success', 'SUCCESS!');
+	res.redirect(url);
+	});
+});
+
+router.get('/remove/:name/:day/:title', checkLogin);
+router.get('/remove/:name/:day/:title', function (req, res) {
+	var currentUser = req.session.user;
+	Post.remove(currentUser.name, req.params.day, req.params.title, function (err) {
+		if (err) {
+			req.flash('error', err); 
+			return res.redirect('back');
+		}
+		req.flash('success', 'DELETED!');
+		res.redirect('/');
+	});
 });
 
 module.exports = router;

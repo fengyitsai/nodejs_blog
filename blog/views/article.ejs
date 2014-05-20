@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <%- include header %>
+<p>
+<% if (user && (user.name == post.name)) { %>
+  <span><a class="edit" href="/edit/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">EDIT</a></span>
+  <span><a class="edit" href="/remove/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">DELETE</a></span>
+<% } %>
+</p>
 <p class="info">
-  Author：<a href="/u/<%= post.name %>"><%= post.name %></a> | 
-  Date：<%= post.time.minute %>
+  AUTHOR：<a href="/u/<%= post.name %>"><%= post.name %></a> | 
+  DATE：<%= post.time.minute %>
 </p>
 <p><%- post.post %></p>
 <%- include footer %>
