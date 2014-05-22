@@ -18,6 +18,7 @@
     "express-session": "*",
     "connect-flash": "*",
     "markdown":"*",
-    "multer":"*"
+    "multer":"*",
+    "request":"*"
   }
 }

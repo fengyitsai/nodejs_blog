@@ -27,7 +27,8 @@ Post.prototype.save = function(callback){
 		name: this.name,
 		time: time,
 		title: this.title,
-		post: this.post
+		post: this.post,
+		comments: []
 	};
 
 
@@ -118,8 +119,15 @@ Post.getOne = function(name, day, title, callback) {
 					return callback(err);
 				}
 
-			doc.post = markdown.toHTML(doc.post);
-			callback(null, doc);
+				if (doc) {
+					doc.post = markdown.toHTML(doc.post);
+					// if(doc.comments){
+					// 	doc.comments.forEach(function (comment) {
+					// 		comment.content = markdown.toHTML(comment.content);
+					// 	});
+					// }
+				}
+				callback(null, doc);
 			});
 		});
 	});
